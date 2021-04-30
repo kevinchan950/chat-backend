@@ -12,7 +12,7 @@ class User(BaseModel):
 
     def validate(self):
         duplicate_username = User.get_or_none(User.username == self.username)
-        duplicate_email = User.get_or_none(User.emai == self.email)
+        duplicate_email = User.get_or_none(User.email == self.email)
 
         if duplicate_username:
             self.errors.append('Username has been registered!')
