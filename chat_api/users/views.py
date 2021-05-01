@@ -15,4 +15,27 @@ def show_user():
         "profile_picture" : user.profile_picture 
     }
     return jsonify({ "data" : results })
-    
+
+
+
+@users_api_blueprint.route("/search=<keyword>", methods=["GET"])
+@jwt_required()
+def search_user(keyword):
+    user = User.get_by_id(get_jwt_identity())
+
+    search_user = User.select().where(User.username.contains(keyword))
+
+    result = []
+    for s in search_user:
+        if s.username == user.username:
+            pass
+        else:
+            data = {
+                "username" : s.username
+            }
+            result.append(data)
+
+    if len(result)==0:
+        return jsonify({ "error" : "No user is found!"})
+    else:
+        return jsonify({ "data" : result })
