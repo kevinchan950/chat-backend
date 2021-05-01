@@ -18,9 +18,9 @@ def login():
             token = create_access_token(identity = user.id, expires_delta = False)
             return jsonify({ "token" : token , "message" : "Login successful!"})
         else:
-            return jsonify({ "message" : "Username or password is not correct!"})
+            return jsonify({ "error" : "Username or password is not correct!"})
     else:
-        return jsonify({ "message" : "Username or password is not correct!"})
+        return jsonify({ "error" : "Username or password is not correct!"})
 
 
 @sessions_api_blueprint.route("/signup", methods=["POST"])
@@ -34,4 +34,24 @@ def signup():
         token = create_access_token(identity = create_user.id, expires_delta= False)
         return jsonify({ "token" : token, "message" : "Login successful!"})
     else:
-        return jsonify({ "message" : create_user.errors})
+        return jsonify({ "error" : create_user.errors})
+
+
+@sessions_api_blueprint.route("/signup/checkemail=<check_email>", methods=["GET"])
+def check_email(check_email):
+    duplicate_email = User.get_or_none(email=check_email)
+
+    if duplicate_email: 
+        return jsonify({ "exist" : True})
+    else:
+        return jsonify({ "exist" : False})
+    
+
+@sessions_api_blueprint.route("/signup/checkusername=<check_username>", methods=["GET"])
+def check_username(check_username):
+    duplicate_username = User.get_or_none(username=check_username)
+
+    if duplicate_username:
+        return jsonify({ "exist" : True})
+    else:
+        return jsonify({ "exist" : False})
