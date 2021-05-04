@@ -1,3 +1,3 @@
 # chat-backend-API
 A Flask App served as backend API for a simple chat app.  
-Github Link to Frontend App - https://github.com/kevinchan950/react-chat
+Github Link to Frontend App - https://github.com/kevinchan950/chat-frontend
