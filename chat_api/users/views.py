@@ -10,12 +10,14 @@ users_api_blueprint = Blueprint('users_api', __name__)
 def show_user():
     user = User.get_by_id(get_jwt_identity())
     results = {
+        "id" : user.id,
         "username" : user.username,
         "email" : user.email,
-        "profile_picture" : user.profile_picture 
+        "profile_picture" : user.profile_picture,
+        "info" : user.info,
+        "is_private" : user.is_private
     }
     return jsonify({ "data" : results })
-
 
 
 @users_api_blueprint.route("/search=<keyword>", methods=["GET"])
@@ -31,6 +33,7 @@ def search_user(keyword):
             pass
         else:
             data = {
+                "id" : s.id,
                 "username" : s.username
             }
             result.append(data)
@@ -39,3 +42,17 @@ def search_user(keyword):
         return jsonify({ "error" : "No user is found!"})
     else:
         return jsonify({ "data" : result })
+
+
+@users_api_blueprint.route("/<id>", methods=["GET"])
+def user_profile(id):
+    user = User.get_by_id(id)
+
+    results = {
+        "username" : user.username,
+        "email" : user.email,
+        "profile_picture" : user.profile_picture,
+        "info" : user.info,
+        "is_private" : user.is_private
+    }
+    return jsonify({ "data" : results })

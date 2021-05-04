@@ -1,4 +1,3 @@
-from enum import unique
 import peewee as pw
 from models.base_model import BaseModel
 import re
@@ -6,9 +5,12 @@ import re
 class User(BaseModel):
     username = pw.CharField(index=True, unique=True, null=False)
     email = pw.CharField(unique=True, null=False)
+    info = pw.TextField(null=True)
     hashed_password = pw.CharField(null=False)
     password = None
     profile_picture = pw.CharField(default='https://i.stack.imgur.com/l60Hf.png')
+    is_online = pw.BooleanField(default=False)
+    is_private = pw.BooleanField(default=False)
 
     def validate(self):
         duplicate_username = User.get_or_none(User.username == self.username)

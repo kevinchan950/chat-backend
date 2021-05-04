@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -16,11 +16,21 @@ def login():
     if user: 
         if check_password_hash(user.hashed_password, password):
             token = create_access_token(identity = user.id, expires_delta = False)
+            update = User.update(is_online=True).where(User.id==user.id)
+            update.execute()    
             return jsonify({ "token" : token , "message" : "Login successful!"})
         else:
             return jsonify({ "error" : "Username or password is not correct!"})
     else:
         return jsonify({ "error" : "Username or password is not correct!"})
+
+
+@sessions_api_blueprint.route("/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    update = User.update(is_online=False).where(User.id==get_jwt_identity())
+    update.execute()
+    return jsonify({ "message" : "Logout Successful!"})
 
 
 @sessions_api_blueprint.route("/signup", methods=["POST"])
@@ -32,6 +42,8 @@ def signup():
     create_user = User(username = username, email = email, password = password, hashed_password = hashed_password)
     if create_user.save():
         token = create_access_token(identity = create_user.id, expires_delta= False)
+        update = User.update(is_online=True).where(User.id==create_user.id)
+        update.execute()
         return jsonify({ "token" : token, "message" : "Login successful!"})
     else:
         return jsonify({ "error" : create_user.errors})
